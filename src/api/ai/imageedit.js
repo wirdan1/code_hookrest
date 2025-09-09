@@ -12,7 +12,7 @@ function pickRandom(arr) {
 }
 
 module.exports = function (app) {
-    app.post('/ai/gemini-imageedit', async (req, res) => {
+    app.post('/ai/imageedit', async (req, res) => {
         try {
             const { prompt, imageUrl } = req.body;
 
