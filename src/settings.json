@@ -127,6 +127,17 @@
       ]
     },
     {
+      "name": "Islam",
+      "items": [
+        {
+          "name": "Hadist",
+          "desc": "Get hadiat random",
+          "path": "/islami/hadits",
+          "status": "ready"
+        }
+      ]
+    },
+    {
       "name": "Search Tools",
       "items": [
         {
@@ -139,12 +150,21 @@
           }
         },
         {
+          "name": "Resep",
+          "desc": "Resep viral search",
+          "path": "/search/resep?q=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
           "name": "Lirik",
           "desc": "Get Lirik",
           "path": "/api/lyrics?title=",
           "status": "ready",
           "params": {
-            "q": "Search query"
+            "title": "Search title"
           }
         },
         {
