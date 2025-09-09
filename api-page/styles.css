@@ -1,20 +1,20 @@
 :root {
-    /* Color Palette - Purple Gradient Theme */
-    --primary-color: red;
-    --primary-hover: red;
-    --secondary-color: #a29bfe;
-    --accent-color: #00cec9;
+    /* Color Palette - White & Red Theme */
+    --primary-color: #e63946;
+    --primary-hover: #cc1e2b;
+    --secondary-color: #f1f1f1;
+    --accent-color: #e63946;
     --success-color: #00b894;
     --error-color: #ff7675;
     --warning-color: #fdcb6e;
     
     /* Light Mode */
-    --background-color: #f8f9fd;
+    --background-color: #ffffff;
     --card-background: #ffffff;
     --text-color: #2d3436;
     --text-muted: #636e72;
     --border-color: rgba(0, 0, 0, 0.08);
-    --highlight-color: rgba(108, 92, 231, 0.1);
+    --highlight-color: rgba(230, 57, 70, 0.1);
     
     /* UI Elements */
     --border-radius-sm: 8px;
@@ -43,26 +43,27 @@
     --header-height: 70px;
     
     /* Background values for rgba */
-    --background-color-rgb: 248, 249, 253;
+    --background-color-rgb: 255, 255, 255;
 }
 
 .dark-mode {
-    --primary-color: #a29bfe;
-    --primary-hover: #8983d8;
-    --secondary-color: #6c5ce7;
-    --accent-color: #00cec9;
+    --primary-color: #e63946;
+    --primary-hover: #cc1e2b;
+    --secondary-color: #f1f1f1;
+    --accent-color: #e63946;
     --background-color: #1a1b2e;
     --card-background: #252640;
     --text-color: #e5e5e5;
     --text-muted: #b2becd;
     --border-color: rgba(255, 255, 255, 0.08);
-    --highlight-color: rgba(162, 155, 254, 0.2);
+    --highlight-color: rgba(230, 57, 70, 0.2);
     --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     --hover-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     --background-color-rgb: 26, 27, 46;
 }
 
+/* Rest of the CSS remains unchanged, only color variables updated */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -147,12 +148,12 @@ a:hover {
 .btn-primary {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: white;
-    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2);
+    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.2);
 }
 
 .btn-primary:hover {
     transform: var(--hover-transform);
-    box-shadow: 0 6px 15px rgba(108, 92, 231, 0.3);
+    box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3);
     color: white;
 }
 
@@ -161,7 +162,7 @@ a:hover {
 }
 
 .btn-primary:disabled {
-    background: linear-gradient(135deg, #9ba3eb, #a7c5eb);
+    background: linear-gradient(135deg, #eb8a92, #f2c5c9);
     cursor: not-allowed;
     opacity: 0.7;
     transform: none;
@@ -177,7 +178,7 @@ a:hover {
     font-size: 0.75rem;
     border-radius: 100px;
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3);
     white-space: nowrap;
 }
 
@@ -1425,7 +1426,7 @@ input:checked + .slider:before {
 }
 
 .dark-mode .json-boolean {
-    color: #ff7b72;
+    color: #e63946;
 }
 
 .dark-mode .json-null {
