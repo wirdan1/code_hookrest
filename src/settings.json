@@ -250,9 +250,9 @@
           "status": "ready"
         },
         {
-          "name": "Img2prompt",
-          "desc": "Img menjadi text",
-          "path": "/ai/img2prompt?url=",
+          "name": "Text2img",
+          "desc": "text menjadi gambar",
+          "path": "/ai/texttoimg?prompt=",
           "status": "ready"
         }
       ]
