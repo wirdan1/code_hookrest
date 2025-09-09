@@ -148,30 +148,12 @@
           }
         },
         {
-          "name": "Lyrics",
-          "desc": "Lirik search",
-          "path": "/api/lyrics?tittle=",
-          "status": "ready",
-          "params": {
-            "title": "Search menggunakan title"
-          }
-        },
-        {
           "name": "Douyin",
           "desc": "Douyin search",
           "path": "/search/douyin?query=",
           "status": "ready",
           "params": {
             "query": "Search query"
-          }
-        },
-        {
-          "name": "Free pict",
-          "desc": "Cari Foto aja sih",
-          "path": "/freepik/search?q=",
-          "status": "ready",
-          "params": {
-            "q": "Search query"
           }
         },
         {
