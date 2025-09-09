@@ -12,14 +12,16 @@
   "dependencies": {
     "axios": "^1.6.8",
     "body-parser": "^1.20.3",
+    "chalk": "^4.1.2",
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
-    "chalk": "^4.1.2",
+    "crypto": "^1.0.1",
     "express": "^4.19.2",
+    "file-type": "^21.0.0",
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "yt-search": "^2.12.1",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "yt-search": "^2.12.1"
   }
 }
