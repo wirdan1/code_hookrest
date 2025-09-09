@@ -98,6 +98,15 @@
           }
         },
         {
+          "name": "Play",
+          "desc": "YouTube play",
+          "path": "/dl/yt/play?query=",
+          "status": "ready",
+          "params": {
+            "query": "Download via query"
+          }
+        },
+        {
           "name": "Twitter",
           "desc": "Twitter Download",
           "path": "/download/x?url=",
