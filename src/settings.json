@@ -28,11 +28,10 @@
           }
         },
         {
-          "name": "Gemini-image",
-          "desc": "Gemini suport to figure",
-          "path": "/ai/imageedit?prompt=&imageUrl=",
-          "status": "ready",
-          }
+          "name": "Imageedit",
+          "desc": "Image edit menggunakan gemini",
+          "path": "/ai/gemini-",
+          "status": "ready"
         },
         {
           "name": "Gpt",
