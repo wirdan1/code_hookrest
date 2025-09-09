@@ -269,12 +269,6 @@
           "desc": "Img menjadi text",
           "path": "/ai/img2prompt?url=",
           "status": "ready"
-        },
-        {
-          "name": "Text2image",
-          "desc": "Ubah prompt menjadi gambar",
-          "path": "/ai/texttoimg?prompt=",
-          "status": "ready"
         }
       ]
     },
