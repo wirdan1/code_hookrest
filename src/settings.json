@@ -28,12 +28,6 @@
           }
         },
         {
-          "name": "Imageedit",
-          "desc": "Image edit menggunakan gemini",
-          "path": "/ai/imageedit?prompt=&imageUrl=",
-          "status": "ready"
-        },
-        {
           "name": "Gpt",
           "desc": "Gpt online",
           "path": "/ai/gpt?prompt=",
