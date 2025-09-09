@@ -139,6 +139,15 @@
           }
         },
         {
+          "name": "Lirik",
+          "desc": "Get Lirik",
+          "path": "/api/lyrics?title=",
+          "status": "ready",
+          "params": {
+            "q": "Search query"
+          }
+        },
+        {
           "name": "Xnxx",
           "desc": "Xnxx search",
           "path": "/xnxx/search?query=",
