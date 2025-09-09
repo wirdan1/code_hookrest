@@ -30,7 +30,7 @@
         {
           "name": "Imageedit",
           "desc": "Image edit menggunakan gemini",
-          "path": "/ai/gemini-imageedit?prompt=&imageUrl=",
+          "path": "/ai/imageedit?prompt=&imageUrl=",
           "status": "ready"
         },
         {
