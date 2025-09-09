@@ -133,23 +133,6 @@
       ]
     },
     {
-      "name": "Image/Maker",
-      "items": [
-        {
-          "name": "Brat",
-          "desc": "Brat img",
-          "path": "/api/brat?text=",
-          "status": "update"
-        },
-        {
-          "name": "Sticker",
-          "desc": "Sticker whatsapp",
-          "path": "/image/search/sticker?q=",
-          "status": "ready"
-        }
-      ]
-    },
-    {
       "name": "Search Tools",
       "items": [
         {
