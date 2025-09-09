@@ -14,11 +14,12 @@ module.exports = function(app) {
       const seed = Date.now().toString() + Math.floor(Math.random() * 1e6).toString();
       const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?seed=${seed}&enhance=true&nologo=true&model=flux`;
 
-      res.json({
-        status: true,
-        prompt,
-        image: imageUrl
-      });
+      // Ambil gambar langsung dalam bentuk binary
+      const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+
+      // Tentukan tipe konten (default jpeg)
+      res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
+      res.send(response.data);
 
     } catch (error) {
       res.status(500).json({
