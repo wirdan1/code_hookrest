@@ -32,8 +32,6 @@
           "desc": "Gemini suport to figure",
           "path": "/ai/imageedit?prompt=&imageUrl=",
           "status": "ready",
-          "params": {
-            "text": "Text for luminai to respond to"
           }
         },
         {
