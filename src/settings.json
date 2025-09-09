@@ -150,7 +150,7 @@
         {
           "name": "Lyrics",
           "desc": "Lirik search",
-          "path": "/api/lyrics?q=",
+          "path": "/api/lyrics?tittle=",
           "status": "ready",
           "params": {
             "title": "Search menggunakan title"
