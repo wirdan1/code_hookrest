@@ -28,9 +28,9 @@
           }
         },
         {
-          "name": "Gpt",
-          "desc": "Gpt online",
-          "path": "/ai/gpt?prompt=",
+          "name": "Imageedit",
+          "desc": "Gpt edit image",
+          "path": "/api/photogpt?imageUrl=&prompt=",
           "status": "ready"
         }
       ]
