@@ -19,6 +19,7 @@
     "crypto": "^1.0.1",
     "express": "^4.19.2",
     "file-type": "^21.0.0",
+    "form-data": "^4.0.4",
     "fs": "^0.0.1-security",
     "https": "^1.0.0",
     "node-fetch": "^2.6.1",
