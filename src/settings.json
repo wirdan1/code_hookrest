@@ -28,6 +28,12 @@
           }
         },
         {
+          "name": "Figure image",
+          "desc": "Gpt edit image to figure",
+          "path": "/api/figurimage?imageUrl=",
+          "status": "ready"
+        },
+        {
           "name": "Imageedit",
           "desc": "Gpt edit image",
           "path": "/api/photogpt?imageUrl=&prompt=",
