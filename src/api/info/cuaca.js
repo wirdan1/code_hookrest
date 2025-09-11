@@ -15,25 +15,41 @@ module.exports = function (app) {
 
       const $ = cheerio.load(data);
 
-      const result = {
-        suhu: $('p.text-\\[32px\\]').first().text().trim() || '',
-        cuaca: $('p.text-sm.font-medium').first().text().trim() || '',
-        lokasi: $('p.text-xl.font-medium').first().text().trim() || '',
-        kelembapan:
-          $('p:contains("Kelembapan:")').next().find('span').text().trim() ||
-          '',
-        jarakPandang:
-          $('p:contains("Jarak Pandang:")')
-            .next()
-            .find('span')
-            .text()
-            .trim() || '',
-      };
+      // Ambil suhu
+      const suhu = $('p.text-\\[32px\\]').first().text().trim() || '';
+
+      // Ambil lokasi
+      const lokasi = $('p.text-xl.font-medium').first().text().trim() || '';
+
+      // Ambil cuaca → cari elemen dekat suhu
+      let cuaca = '';
+      const suhuElem = $('p.text-\\[32px\\]').first().parent();
+      cuaca = suhuElem.find('p.text-sm.font-medium').first().text().trim();
+
+      // Ambil kelembapan
+      const kelembapan = $('p:contains("Kelembapan")')
+        .next()
+        .find('span')
+        .text()
+        .trim() || '';
+
+      // Ambil jarak pandang
+      const jarakPandang = $('p:contains("Jarak Pandang")')
+        .next()
+        .find('span')
+        .text()
+        .trim() || '';
 
       res.json({
         status: true,
         creator: 'Danz-dev',
-        result,
+        result: {
+          suhu,
+          cuaca,
+          lokasi,
+          kelembapan,
+          jarakPandang,
+        },
       });
     } catch (error) {
       res.status(500).json({
