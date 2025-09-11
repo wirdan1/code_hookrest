@@ -1,41 +1,60 @@
-const puppeteer = require('puppeteer');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = function (app) {
   async function scrapeCuacaRealtime() {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+    const url = 'https://www.bmkg.go.id';
 
-    const page = await browser.newPage();
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
-    );
+    try {
+      const { data } = await axios.get(url, {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        },
+      });
 
-    await page.goto('https://www.bmkg.go.id', {
-      waitUntil: 'networkidle2',
-      timeout: 60000,
-    });
-
-    await page.waitForSelector('.weather-now', { timeout: 10000 });
-
-    const data = await page.evaluate(() => {
+      const $ = cheerio.load(data);
       const result = {};
-      result.suhu = document.querySelector('.temperature')?.textContent.trim() || null;
-      result.cuaca = document.querySelector('.description')?.textContent.trim() || null;
-      result.lokasi = document.querySelector('.location')?.textContent.trim() || null;
-      result.kelembapan = document.querySelector('[data-testid="humidity"]')?.textContent.trim() || null;
-      result.anginKecepatan = document.querySelector('[data-testid="wind-speed"]')?.textContent.trim() || null;
-      result.anginArah = document.querySelector('[data-testid="wind-direction"]')?.textContent.trim() || null;
-      result.jarakPandang = document.querySelector('[data-testid="visibility"]')?.textContent.trim() || null;
-      return result;
-    });
 
-    await browser.close();
-    return data;
+      // Suhu
+      result.suhu = $('.text-\\[32px\\]').first().text().trim();
+
+      // Cuaca
+      result.cuaca = $('.text-sm.font-medium').first().text().trim();
+
+      // Lokasi
+      result.lokasi = $('.text-xl.font-medium').first().text().trim();
+
+      // Kelembapan
+      result.kelembapan = $('p:contains("Kelembapan:")')
+        .next()
+        .find('span')
+        .text()
+        .trim();
+
+      // Angin
+      const anginText = $('p:contains("Angin:")').next().text().trim();
+      if (anginText) {
+        const [kecepatan, arah] = anginText.split(' ');
+        result.anginKecepatan = kecepatan;
+        result.anginArah = arah;
+      }
+
+      // Jarak Pandang
+      result.jarakPandang = $('p:contains("Jarak Pandang:")')
+        .next()
+        .find('span')
+        .text()
+        .trim();
+
+      return result;
+    } catch (error) {
+      throw new Error(`Gagal scrape: ${error.message}`);
+    }
   }
 
-  // Endpoint API
+  // Endpoint Express
   app.get('/api/cuaca-realtime', async (req, res) => {
     try {
       const result = await scrapeCuacaRealtime();
