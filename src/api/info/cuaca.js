@@ -1,50 +1,44 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+const puppeteer = require('puppeteer');
 
 module.exports = function (app) {
-  async function scrapeCuacaBMKG(kota = 'Jakarta Pusat', areaId = '5015', prov = '6') {
-    const baseUrl = 'https://www.bmkg.go.id/cuaca/prakiraan-cuaca.bmkg';
-    const url = `${baseUrl}?Kota=${encodeURIComponent(kota)}&AreaID=${areaId}&Prov=${prov}`;
+  async function scrapeCuacaRealtime() {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
-    try {
-      const { data } = await axios.get(url, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-        },
-      });
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
+    );
 
-      const $ = cheerio.load(data);
-      const result = [];
+    await page.goto('https://www.bmkg.go.id', {
+      waitUntil: 'networkidle2',
+      timeout: 60000,
+    });
 
-      $('.prakicu-kabkota').each((i, elem) => {
-        const tanggal = $(elem).find('.kabkota-title').text().trim();
-        const cuaca = $(elem).find('.kabkota-cuaca').text().trim();
-        const suhu = $(elem).find('.kabkota-suhu').text().trim();
-        const kelembapan = $(elem).find('.kabkota-lembab').text().trim();
+    await page.waitForSelector('.weather-now', { timeout: 10000 });
 
-        if (tanggal) {
-          result.push({
-            tanggal,
-            cuaca,
-            suhu,
-            kelembapan,
-          });
-        }
-      });
-
+    const data = await page.evaluate(() => {
+      const result = {};
+      result.suhu = document.querySelector('.temperature')?.textContent.trim() || null;
+      result.cuaca = document.querySelector('.description')?.textContent.trim() || null;
+      result.lokasi = document.querySelector('.location')?.textContent.trim() || null;
+      result.kelembapan = document.querySelector('[data-testid="humidity"]')?.textContent.trim() || null;
+      result.anginKecepatan = document.querySelector('[data-testid="wind-speed"]')?.textContent.trim() || null;
+      result.anginArah = document.querySelector('[data-testid="wind-direction"]')?.textContent.trim() || null;
+      result.jarakPandang = document.querySelector('[data-testid="visibility"]')?.textContent.trim() || null;
       return result;
-    } catch (error) {
-      throw new Error(`Gagal scrape: ${error.message}`);
-    }
+    });
+
+    await browser.close();
+    return data;
   }
 
   // Endpoint API
-  app.get('/api/cuaca', async (req, res) => {
-    const { kota = 'Jakarta Pusat', areaId = '5015', prov = '6' } = req.query;
-
+  app.get('/api/cuaca-realtime', async (req, res) => {
     try {
-      const result = await scrapeCuacaBMKG(kota, areaId, prov);
+      const result = await scrapeCuacaRealtime();
       res.json({
         status: true,
         creator: 'Danz-dev',
