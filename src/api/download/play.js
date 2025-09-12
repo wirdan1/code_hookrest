@@ -1,109 +1,119 @@
-const axios = require('axios');
 const yts = require('yt-search');
+const fetch = require('node-fetch');
 
-module.exports = function(app) {
-    const ytdown = {
-        api: {
-            base: "https://p.oceansaver.in/ajax/",
-            progress: "https://p.oceansaver.in/ajax/progress.php"
-        },
-        headers: {
-            'authority': 'p.oceansaver.in',
-            'origin': 'https://y2down.cc',
-            'referer': 'https://y2down.cc/',
-            'user-agent': 'Postify/1.0.0'
-        },
-        isUrl: str => {
-            try { new URL(str); return true; } catch { return false; }
-        },
-        youtube: url => {
-            if (!url) return null;
-            const patterns = [
-                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-                /youtu\.be\/([a-zA-Z0-9_-]{11})/
-            ];
-            for (let p of patterns) {
-                const match = url.match(p);
-                if (match) return match[1];
-            }
-            return null;
-        },
-        request: async (endpoint, params = {}) => {
-            const { data } = await axios.get(`${ytdown.api.base}${endpoint}`, {
-                params,
-                headers: ytdown.headers,
-                withCredentials: true,
-                responseType: 'json'
-            });
-            return data;
-        },
-        download: async (link) => {
-            const id = ytdown.youtube(link);
-            if (!id) throw new Error("Gagal ekstrak ID YouTube");
-            const response = await ytdown.request("download.php", {
-                format: 'mp3',
-                url: `https://www.youtube.com/watch?v=${id}`
-            });
-            if (!response.success) throw new Error(response.message || "Error");
-            const pr = await ytdown.checkProgress(response.id);
-            if (!pr.success) throw new Error(pr.error || "Gagal ambil link download");
-            return {
-                title: response.title || "Unknown",
-                id,
-                thumbnail: response.info?.image || `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
-                download: pr.download_url
-            };
-        },
-        checkProgress: async (id) => {
-            let attempts = 0;
-            while (attempts < 100) {
-                try {
-                    const res = await axios.get(ytdown.api.progress, {
-                        params: { id },
-                        headers: ytdown.headers,
-                        withCredentials: true,
-                        responseType: 'json'
-                    });
-                    if (res.data.success && res.data.download_url) return { success: true, download_url: res.data.download_url };
-                } catch {}
-                await new Promise(r => setTimeout(r, 1000));
-                attempts++;
-            }
-            return { success: false, error: "Timeout, gagal ambil link download" };
-        }
-    };
+const ssvid = {
+  baseUrl: 'https://ssvid.net',
 
-    app.get('/dl/yt/play', async (req, res) => {
-        const { query } = req.query;
-        if (!query) return res.status(400).json({ status: false, error: "Parameter 'query' diperlukan" });
+  baseHeaders: {
+    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    origin: 'https://ssvid.net',
+    referer: 'https://ssvid.net/youtube-to-mp3'
+  },
 
-        try {
-            // Cari video pertama
-            const searchResult = await yts(query);
-            const video = searchResult.videos[0];
-            if (!video) return res.status(404).json({ status: false, error: "Video tidak ditemukan" });
+  async hit(path, payload) {
+    const body = new URLSearchParams(payload);
+    const opts = { headers: this.baseHeaders, body, method: 'post' };
+    const r = await fetch(`${this.baseUrl}${path}`, opts);
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}\n${await r.text()}`);
+    return await r.json();
+  },
 
-            // Download mp3
-            const mp3 = await ytdown.download(video.url);
-
-            res.json({
-                status: true,
-                creator: "Danz-dev",
-                result: {
-                    video: {
-                        url: video.url,
-                        description: video.description,
-                        duration: video.timestamp,
-                        views: video.views,
-                    },
-                    mp3
-                }
-            });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
-        }
+  async download(queryOrUrl, format = 'mp3') {
+    // First hit search
+    let search = await this.hit('/api/ajax/search', {
+      query: queryOrUrl,
+      cf_token: '',
+      vt: 'youtube'
     });
+
+    if (search.p === 'search') {
+      if (!search?.items?.length) throw new Error(`hasil pencarian ${queryOrUrl} tidak ada`);
+      const { v } = search.items[0];
+      const videoUrl = 'https://www.youtube.com/watch?v=' + v;
+
+      // hit lagi untuk get vid
+      search = await this.hit('/api/ajax/search', {
+        query: videoUrl,
+        cf_token: '',
+        vt: 'youtube'
+      });
+    }
+
+    const vid = search.vid;
+    let key;
+
+    if (format === 'mp3') {
+      key = search.links?.mp3?.mp3128?.k;
+    } else {
+      const allFormats = Object.entries(search.links.mp4);
+      const find = allFormats.find(v => v[1].q === format);
+      key = find?.[1]?.k;
+    }
+
+    if (!key) throw new Error(`Format ${format} gak tersedia`);
+
+    // Convert
+    const convert = await this.hit('/api/ajax/convert', { k: key, vid });
+
+    if (convert.c_status === 'CONVERTING') {
+      let convert2;
+      const limit = 5;
+      let attempt = 0;
+      do {
+        attempt++;
+        console.log(`cek convert ${attempt}/${limit}`);
+        convert2 = await this.hit('/api/convert/check?hl=en', {
+          vid,
+          b_id: convert.b_id
+        });
+        if (convert2.c_status === 'CONVERTED') return convert2;
+        await new Promise(r => setTimeout(r, 5000));
+      } while (attempt < limit && convert2.c_status === 'CONVERTING');
+      throw new Error('file belum siap / status belum diketahui');
+    } else {
+      return convert;
+    }
+  }
+};
+
+module.exports = function (app) {
+  app.get('/dl/yt/play', async (req, res) => {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({
+        status: false,
+        error: "Parameter 'query' diperlukan"
+      });
+    }
+
+    try {
+      // Cari video pertama dengan yt-search
+      const searchResult = await yts(query);
+      const video = searchResult.videos[0];
+      if (!video) {
+        return res.status(404).json({ status: false, error: 'Video tidak ditemukan' });
+      }
+
+      // Convert pakai ssvid → MP3
+      const mp3 = await ssvid.download(video.url, 'mp3');
+
+      res.json({
+        status: true,
+        creator: 'Danz-dev',
+        result: {
+          video: {
+            title: video.title,
+            url: video.url,
+            description: video.description,
+            duration: video.timestamp,
+            views: video.views,
+            thumbnail: video.thumbnail
+          },
+          mp3
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ status: false, error: err.message });
+    }
+  });
 };
