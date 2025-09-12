@@ -1,130 +1,173 @@
-const axios = require('axios');
+/*
+  Downloader YouTube via ssvid.net
+  Endpoint:
+    GET /ytdl/mp3?url=YOUTUBE_URL
+    GET /ytdl/mp4?url=YOUTUBE_URL   (default 720p)
+*/
 
+const fetch = require('node-fetch');
+
+const yt = {
+  baseUrl: 'https://ssvid.net',
+
+  baseHeaders: {
+    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    origin: 'https://ssvid.net',
+    referer: 'https://ssvid.net/youtube-to-mp3'
+  },
+
+  validateFormat(userFormat) {
+    const validFormat = ['mp3', '360p', '720p', '1080p'];
+    if (!validFormat.includes(userFormat)) {
+      throw new Error(`invalid format! available formats: ${validFormat.join(', ')}`);
+    }
+  },
+
+  handleFormat(userFormat, searchJson) {
+    this.validateFormat(userFormat);
+    let result;
+    if (userFormat === 'mp3') {
+      result = searchJson.links?.mp3?.mp3128?.k;
+    } else {
+      let selectedFormat;
+      const allFormats = Object.entries(searchJson.links.mp4);
+
+      const quality = allFormats
+        .map(v => v[1].q)
+        .filter(v => /\d+p/.test(v))
+        .map(v => parseInt(v))
+        .sort((a, b) => b - a)
+        .map(v => v + 'p');
+
+      if (!quality.includes(userFormat)) {
+        selectedFormat = quality[0];
+        console.log(`⚠️ format ${userFormat} gak ada. fallback ke ${selectedFormat}`);
+      } else {
+        selectedFormat = userFormat;
+      }
+
+      const find = allFormats.find(v => v[1].q === selectedFormat);
+      result = find?.[1]?.k;
+    }
+    if (!result) throw new Error(`${userFormat} gak ada cuy`);
+    return result;
+  },
+
+  async hit(path, payload) {
+    try {
+      const body = new URLSearchParams(payload);
+      const opts = { headers: this.baseHeaders, body, method: 'post' };
+      const r = await fetch(`${this.baseUrl}${path}`, opts);
+      if (!r.ok) throw new Error(`${r.status} ${r.statusText}\n${await r.text()}`);
+      return await r.json();
+    } catch (e) {
+      throw new Error(`${path}\n${e.message}`);
+    }
+  },
+
+  async download(queryOrYtUrl, userFormat = 'mp3') {
+    this.validateFormat(userFormat);
+
+    // first hit
+    let search = await this.hit('/api/ajax/search', {
+      query: queryOrYtUrl,
+      cf_token: '',
+      vt: 'youtube'
+    });
+
+    if (search.p === 'search') {
+      if (!search?.items?.length) throw new Error(`hasil pencarian ${queryOrYtUrl} tidak ada`);
+      const { v } = search.items[0];
+      const videoUrl = 'https://www.youtube.com/watch?v=' + v;
+
+      // hit lagi
+      search = await this.hit('/api/ajax/search', {
+        query: videoUrl,
+        cf_token: '',
+        vt: 'youtube'
+      });
+    }
+
+    const vid = search.vid;
+    const k = this.handleFormat(userFormat, search);
+
+    // convert
+    const convert = await this.hit('/api/ajax/convert', { k, vid });
+
+    if (convert.c_status === 'CONVERTING') {
+      let convert2;
+      const limit = 5;
+      let attempt = 0;
+      do {
+        attempt++;
+        console.log(`cek convert ${attempt}/${limit}`);
+        convert2 = await this.hit('/api/convert/check?hl=en', {
+          vid,
+          b_id: convert.b_id
+        });
+        if (convert2.c_status === 'CONVERTED') return convert2;
+        await new Promise(re => setTimeout(re, 5000));
+      } while (attempt < limit && convert2.c_status === 'CONVERTING');
+      throw new Error('file belum siap / status belum diketahui');
+    } else {
+      return convert;
+    }
+  }
+};
+
+// ==== versi Express API ====
 module.exports = function (app) {
-    const ytdown = {
-        api: {
-            base: "https://p.oceansaver.in/ajax/",
-            progress: "https://p.oceansaver.in/ajax/progress.php"
-        },
-        headers: {
-            'authority': 'p.oceansaver.in',
-            'origin': 'https://y2down.cc',
-            'referer': 'https://y2down.cc/',
-            'user-agent': 'Postify/1.0.0'
-        },
-        silent: process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production',
+  // Endpoint MP3
+  app.get('/api/ytmp3', async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({
+        status: false,
+        creator: 'Danz-dev',
+        error: 'Parameter ?url= diperlukan'
+      });
+    }
 
-        isUrl: str => {
-            try { new URL(str); return true; } catch { return false; }
-        },
+    try {
+      const result = await yt.download(url, 'mp3');
+      return res.json({
+        status: true,
+        creator: 'Danz-dev',
+        result
+      });
+    } catch (err) {
+      return res.status(500).json({
+        status: false,
+        creator: 'Danz-dev',
+        error: err.message
+      });
+    }
+  });
 
-        youtube: url => {
-            if (!url) return null;
-            const patterns = [
-                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
-                /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
-                /youtu\.be\/([a-zA-Z0-9_-]{11})/
-            ];
-            for (let p of patterns) {
-                const match = url.match(p);
-                if (match) return match[1];
-            }
-            return null;
-        },
+  // Endpoint MP4 (default 720p)
+  app.get('/api/ytmp4', async (req, res) => {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({
+        status: false,
+        creator: 'Danz-dev',
+        error: 'Parameter ?url= diperlukan'
+      });
+    }
 
-        request: async (endpoint, params = {}) => {
-            const { data } = await axios.get(`${ytdown.api.base}${endpoint}`, {
-                params,
-                headers: ytdown.headers,
-                withCredentials: true,
-                responseType: 'json'
-            });
-            return data;
-        },
-
-        download: async (link, format) => {
-            if (!link) throw new Error("Parameter 'url' diperlukan 🗿");
-            if (!ytdown.isUrl(link)) throw new Error("Link bukan YouTube 🗿");
-
-            const id = ytdown.youtube(link);
-            if (!id) throw new Error("Gagal ekstrak ID YouTube 😂");
-
-            const response = await ytdown.request("download.php", {
-                format,
-                url: `https://www.youtube.com/watch?v=${id}`
-            });
-
-            return await ytdown.handler(response, format, id);
-        },
-
-        handler: async (data, format, id) => {
-            if (!data.success) throw new Error(data.message || "Error");
-            if (!data.id) throw new Error("ID Download tidak ada 😂");
-
-            const pr = await ytdown.checkProgress(data.id);
-            if (pr.success) return ytdown.final(data, pr, format, id);
-            throw new Error(pr.error || "Unknown error");
-        },
-
-        checkProgress: async (id) => {
-            let attempts = 0;
-            while (attempts < 100) {
-                try {
-                    const res = await axios.get(ytdown.api.progress, {
-                        params: { id },
-                        headers: ytdown.headers,
-                        withCredentials: true,
-                        responseType: 'json'
-                    });
-                    const data = res.data;
-
-                    if (data.success && data.download_url) return { success: true, ...data };
-                } catch (e) {
-                    // ignore error, retry
-                }
-
-                await new Promise(r => setTimeout(r, 1000));
-                attempts++;
-            }
-            return { success: false, error: "Timeout, gagal ambil link download 😂" };
-        },
-
-        final: (init, pro, format, id) => ({
-            success: true,
-            title: init.title || "Unknown 🤷🏻",
-            type: format === 'mp3' ? 'audio' : 'video',
-            format,
-            thumbnail: init.info?.image || `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
-            download: pro.download_url || null,
-            id
-        })
-    };
-
-    // Endpoint MP3
-    app.get('/api/ytmp3', async (req, res) => {
-        const { url } = req.query;
-        if (!url) return res.status(400).json({ status: false, error: 'Parameter "url" diperlukan' });
-
-        try {
-            const result = await ytdown.download(url, 'mp3');
-            res.json({ status: true, creator: 'Danz-dev', result });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
-        }
-    });
-
-    // Endpoint MP4 720p
-    app.get('/api/ytmp4', async (req, res) => {
-        const { url } = req.query;
-        if (!url) return res.status(400).json({ status: false, error: 'Parameter "url" diperlukan' });
-
-        try {
-            const result = await ytdown.download(url, '720'); // fix 720p
-            res.json({ status: true, creator: 'Danz-dev', result });
-        } catch (err) {
-            res.status(500).json({ status: false, error: err.message });
-        }
-    });
+    try {
+      const result = await yt.download(url, '720p');
+      return res.json({
+        status: true,
+        creator: 'Danz-dev',
+        result
+      });
+    } catch (err) {
+      return res.status(500).json({
+        status: false,
+        creator: 'Danz-dev',
+        error: err.message
+      });
+    }
+  });
 };
