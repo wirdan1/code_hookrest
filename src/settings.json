@@ -22,7 +22,7 @@
           "name": "LuminAI",
           "desc": "Talk with luminai",
           "path": "/ai/luminai?text=",
-          "status": "ready",
+          "status": "update",
           "params": {
             "text": "Text for luminai to respond to"
           }
