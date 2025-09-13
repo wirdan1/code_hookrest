@@ -31,13 +31,13 @@
           "name": "Figure image",
           "desc": "Gpt edit image to figure",
           "path": "/api/figurimage?imageUrl=",
-          "status": "ready"
+          "status": "update"
         },
         {
           "name": "Imageedit",
           "desc": "Gpt edit image",
           "path": "/api/photogpt?imageUrl=&prompt=",
-          "status": "ready"
+          "status": "update"
         }
       ]
     },
