@@ -1,525 +1,352 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>System Maintenance | Modern Interface</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --primary-light: #818cf8;
-      --text: #1e293b;
-      --text-light: #64748b;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --radius: 16px;
-      --radius-lg: 24px;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      --gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hookrest - Maintenance</title>
+    <link rel="icon" href="/src/images/icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/src/images/icon.png">
+    <link rel="shortcut icon" href="/src/images/icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #f9fbff;
+            --foreground: #2c3e50;
+            --card: #ffffff;
+            --card-foreground: #2c3e50;
+            --primary: #6c5ce7;
+            --primary-foreground: #ffffff;
+            --secondary: #a29bfe;
+            --accent: #00cec9;
+            --muted: #f1f5f9;
+            --muted-foreground: #7f8c8d;
+            --border: rgba(0, 0, 0, 0.06);
+            --radius: 0.75rem;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.12);
+            --gradient-primary: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            --gradient-secondary: linear-gradient(135deg, #a29bfe 0%, #00cec9 100%);
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      margin: 0;
-      background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, rgba(99, 102, 241, 0.03) 90%);
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .maintenance-container {
-      max-width: 600px;
-      width: 100%;
-      perspective: 1000px;
-    }
+        .maintenance-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 2rem;
+            text-align: center;
+        }
 
-    .maintenance-card {
-      background: var(--card-bg);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 40px;
-      width: 100%;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      transform-style: preserve-3d;
-      transition: transform 0.5s ease;
-    }
+        .maintenance-card {
+            background: var(--card);
+            border-radius: 1.5rem;
+            padding: 3rem 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .maintenance-card::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: var(--gradient);
-      opacity: 0.05;
-      z-index: 0;
-      animation: rotate 15s linear infinite;
-    }
+        .maintenance-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
 
-    @keyframes rotate {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        .icon-container {
+            width: 6rem;
+            height: 6rem;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: var(--shadow);
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-    .card-content {
-      position: relative;
-      z-index: 1;
-    }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: var(--shadow);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: var(--shadow-lg);
+            }
+        }
 
-    .maintenance-icon {
-      font-size: 0;
-      margin-bottom: 24px;
-      position: relative;
-      height: 80px;
-    }
+        .maintenance-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-    .icon-animation {
-      display: inline-block;
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: var(--gradient);
-      position: relative;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-      animation: pulse 2s infinite;
-    }
+        .maintenance-message {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
 
-    .icon-animation i {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 32px;
-    }
+        .retry-button {
+            background: var(--gradient-primary);
+            color: var(--primary-foreground);
+            padding: 1rem 2rem;
+            border-radius: var(--radius);
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            filter: brightness(1.1);
+        }
 
-    h1 {
-      font-size: 28px;
-      margin-bottom: 12px;
-      font-weight: 600;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
-    }
+        .retry-button:active {
+            transform: translateY(0);
+        }
 
-    p {
-      color: var(--text-light);
-      margin-bottom: 28px;
-      line-height: 1.6;
-      font-size: 16px;
-    }
+        .time-info {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
 
-    .time-tracker {
-      background-color: rgba(99, 102, 241, 0.08);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin: 24px 0;
-      border: 1px solid rgba(99, 102, 241, 0.1);
-      backdrop-filter: blur(5px);
-    }
+        .time-info i {
+            color: var(--primary);
+        }
 
-    .time-tracker-label {
-      font-size: 14px;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      display: block;
-    }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--muted);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
 
-    .time-display {
-      font-family: 'Poppins', monospace;
-      font-size: 28px;
-      font-weight: 600;
-      color: var(--primary-dark);
-      letter-spacing: 1px;
-    }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+            animation: progress 3s ease-in-out infinite;
+        }
 
-    .btn {
-      background: var(--gradient);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 500;
-      font-size: 16px;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-      position: relative;
-      overflow: hidden;
-      z-index: 1;
-    }
+        @keyframes progress {
+            0% {
+                width: 0%;
+            }
+            50% {
+                width: 70%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
 
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
-    }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--muted);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted-foreground);
+            margin-bottom: 1rem;
+        }
 
-    .btn:active {
-      transform: translateY(0);
-    }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
 
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: -1;
-    }
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0.3;
+            }
+        }
 
-    .btn:hover::before {
-      opacity: 1;
-    }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .maintenance-container {
+                padding: 1rem;
+            }
 
-    .status {
-      margin-top: 24px;
-      font-size: 14px;
-      color: var(--text-light);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
+            .maintenance-card {
+                padding: 2rem 1.5rem;
+            }
 
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: #10b981;
-      animation: blink 1.5s infinite;
-    }
+            .icon-container {
+                width: 5rem;
+                height: 5rem;
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
+            .maintenance-title {
+                font-size: 1.5rem;
+            }
 
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background-color: rgba(99, 102, 241, 0.1);
-      border-radius: 3px;
-      margin: 24px 0;
-      overflow: hidden;
-    }
+            .maintenance-message {
+                font-size: 1rem;
+            }
 
-    .progress-bar {
-      height: 100%;
-      width: 0;
-      background: var(--gradient);
-      border-radius: 3px;
-      transition: width 0.5s ease;
-      animation: progressAnimation 2s infinite alternate;
-    }
+            .retry-button {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.95rem;
+            }
+        }
 
-    @keyframes progressAnimation {
-      0% { width: 20%; }
-      100% { width: 80%; }
-    }
+        @media (max-width: 480px) {
+            .maintenance-card {
+                padding: 1.5rem 1rem;
+            }
 
-    .gift-notification {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background: white;
-      padding: 16px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: slideUp 0.5s forwards 1s;
-      z-index: 100;
-    }
+            .icon-container {
+                width: 4rem;
+                height: 4rem;
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
 
-    .gift-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
+            .maintenance-title {
+                font-size: 1.25rem;
+            }
 
-    .gift-content {
-      text-align: left;
-    }
+            .maintenance-message {
+                font-size: 0.95rem;
+            }
+        }
 
-    .gift-title {
-      font-weight: 600;
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .gift-text {
-      font-size: 12px;
-      color: var(--text-light);
-    }
-
-    @keyframes slideUp {
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    /* Loading animation */
-    .loading-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .loading-screen.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .loader {
-      width: 60px;
-      height: 60px;
-      border: 5px solid rgba(99, 102, 241, 0.2);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
-      margin-bottom: 20px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-text {
-      font-size: 16px;
-      color: var(--text);
-      margin-top: 16px;
-      font-weight: 500;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 480px) {
-      .maintenance-card {
-        padding: 30px 20px;
-      }
-      
-      h1 {
-        font-size: 24px;
-      }
-      
-      .time-display {
-        font-size: 24px;
-      }
-      
-      .gift-notification {
-        bottom: 20px;
-        right: 20px;
-        left: 20px;
-      }
-    }
-  </style>
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+    </style>
 </head>
 <body>
-  <div class="maintenance-container">
-    <div class="maintenance-card">
-      <div class="card-content">
-        <div class="maintenance-icon">
-          <div class="icon-animation">
-            <i class="fas fa-cogs"></i>
-          </div>
-        </div>
-        
-        <h1>System Maintenance</h1>
-        <p>Mohon maaf atas kendala dan ketidak nyamanan ini, sekarang kami sedang melakukan pengecekan sistem. mohon untuk bersabar dalam beberapa saat, sistem sewaktu waktu dapat on kembali</p>
-        
-        <div class="progress-container">
-          <div class="progress-bar"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="loading-screen" id="loadingScreen">
-    <div class="loader"></div>
-    <div class="loading-text">Checking system status...</div>
-  </div>
-
-  <script>
-    // Global variables
-    let maintenanceActive = false;
-    let startTime = null;
-    let elapsedTime = 0;
-    let timerInterval = null;
-    const loadingScreen = document.getElementById('loadingScreen');
-    const refreshBtn = document.getElementById('refreshBtn');
-
-    // Simulate maintenance status (in a real app, this would be from an API)
-    function simulateMaintenanceStatus() {
-      // 90% chance maintenance is active (for demo purposes)
-      return Math.random() < 0.9;
-    }
-
-    // Check maintenance status from server
-    async function checkMaintenanceStatus() {
-      showLoading();
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      const maintenanceActiveNow = simulateMaintenanceStatus();
-      
-      if (maintenanceActiveNow) {
-        // Maintenance just turned ON
-        if (!maintenanceActive) {
-          startTimer();
-          maintenanceActive = true;
-        }
-      } else {
-        // Maintenance just turned OFF
-        if (maintenanceActive) {
-          stopTimer();
-          maintenanceActive = false;
-          showCompletionMessage();
-        }
-      }
-      
-      updateLastChecked();
-      hideLoading();
-    }
-
-    // Show completion message
-    function showCompletionMessage() {
-      const card = document.querySelector('.maintenance-card');
-      card.innerHTML = `
-        <div class="card-content">
-          <div class="maintenance-icon">
-            <div class="icon-animation" style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">
-              <i class="fas fa-check"></i>
+    <div class="maintenance-container">
+        <div class="maintenance-card fade-in">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Maintenance Mode</span>
             </div>
-          </div>
-          
-          <h1 style="background: linear-gradient(135deg, #10B981 0%, #34D399 100%);">Maintenance Complete</h1>
-          <p>Our systems are now back online with exciting new features and improvements. Thank you for your patience!</p>
-          
-          <div class="time-tracker">
-            <span class="time-tracker-label">Total Maintenance Time</span>
-            <div class="time-display">${document.getElementById('duration').textContent}</div>
-          </div>
-          
-          <button class="btn" onclick="window.location.href='/'">
-            <i class="fas fa-arrow-right" style="margin-right: 8px;"></i> Continue to Site
-          </button>
+
+            <div class="icon-container">
+                <i class="bi bi-tools"></i>
+            </div>
+
+            <h1 class="maintenance-title">Website Under Maintenance</h1>
+            
+            <p class="maintenance-message">
+                We're currently upgrading our systems to serve you better.
+                <br />
+                Please check back in a few hours.
+            </p>
+
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+
+            <button class="retry-button" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise"></i>
+                Retry
+            </button>
+
+            <div class="time-info">
+                <i class="bi bi-clock"></i>
+                <span>Last updated: <span id="currentTime"></span></span>
+            </div>
         </div>
-      `;
-    }
+    </div>
 
-    // Timer functions
-    function startTimer() {
-      if (!startTime) {
-        startTime = new Date();
-        elapsedTime = 0;
-      }
-      
-      if (timerInterval) clearInterval(timerInterval);
-      
-      timerInterval = setInterval(updateTimer, 1000);
-      updateTimer(); // Immediate update
-    }
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
 
-    function stopTimer() {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-      }
-    }
+        updateTime();
+        setInterval(updateTime, 60000);
 
-    function updateTimer() {
-      const now = new Date();
-      elapsedTime = Math.floor((now - startTime) / 1000);
-      
-      const hours = Math.floor(elapsedTime / 3600);
-      const minutes = Math.floor((elapsedTime % 3600) / 60);
-      const seconds = elapsedTime % 60;
-      
-      document.getElementById('duration').textContent = 
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    }
+        setTimeout(() => {
+            location.reload();
+        }, 30000);
 
-    function updateLastChecked() {
-      const now = new Date();
-      document.getElementById('lastChecked').textContent = 
-        now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function showLoading() {
-      loadingScreen.classList.add('active');
-    }
-
-    function hideLoading() {
-      loadingScreen.classList.remove('active');
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', () => {
-      // Start with maintenance active for demo
-      maintenanceActive = true;
-      startTimer();
-      
-      // Check status immediately
-      checkMaintenanceStatus();
-      
-      // Then check every 30 seconds
-      setInterval(checkMaintenanceStatus, 30000);
-      
-      // Button click handler
-      refreshBtn.addEventListener('click', checkMaintenanceStatus);
-    });
-  </script>
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                updateTime();
+            }
+        });
+    </script>
 </body>
 </html>
