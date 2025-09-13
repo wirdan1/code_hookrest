@@ -2,7 +2,7 @@ const axios = require('axios');
 
 module.exports = function (app) {
   // Endpoint untuk download audio
-  app.get('/api/ytdl/mp3', async (req, res) => {
+  app.get('/download/ytmp3', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ status: false, error: "Parameter 'url' diperlukan" });
 
@@ -22,7 +22,7 @@ module.exports = function (app) {
   });
 
   // Endpoint untuk download video 720p
-  app.get('/api/ytmp4', async (req, res) => {
+  app.get('/download/ytmp4', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ status: false, error: "Parameter 'url' diperlukan" });
 
